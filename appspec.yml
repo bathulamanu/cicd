@@ -2,8 +2,13 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ubuntu/app
+    destination: /home/ubuntu/app  # or wherever you're deploying
+
 hooks:
+  BeforeInstall:
+    - location: scripts/install_dependencies.sh
+      timeout: 300
+      runas: root
   AfterInstall:
     - location: scripts/pull_and_run.sh
       timeout: 300
