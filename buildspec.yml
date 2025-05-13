@@ -5,7 +5,8 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      - $(aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 495599757751.dkr.ecr.us-east-1.amazonaws.com)
+      - echo Logging in to ECR...
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 495599757751.dkr.ecr.us-east-1.amazonaws.com
       - REPO=495599757751.dkr.ecr.us-east-1.amazonaws.com/admin
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
   build:
@@ -14,9 +15,9 @@ phases:
       - docker build -t $REPO:$IMAGE_TAG .
   post_build:
     commands:
-      - echo Pushing the Docker image to ECR...
+      - echo Pushing the Docker image...
       - docker push $REPO:$IMAGE_TAG
-      - echo Writing image definition...
+      - echo Writing image definition file...
       - printf '[{"name":"admin","imageUri":"%s"}]' $REPO:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
