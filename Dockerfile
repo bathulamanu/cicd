@@ -12,3 +12,4 @@ EXPOSE 80
 
 # Start Nginx (this is default CMD for the nginx image, so it's optional)
 CMD ["nginx", "-g", "daemon off;"]
+
