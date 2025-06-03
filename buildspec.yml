@@ -10,7 +10,7 @@ phases:
 
   pre_build:
     commands:
-      - echo Zipping the Lambda function...
+      - echo Zipping the Lambda function... 
       - zip -r function.zip .  # zip everything in the repo
       - export S3_BUCKET=my-lambda-deployments
       - export ZIP_KEY=lambda-function-$(date +%Y%m%d%H%M%S).zip
