@@ -1,0 +1,30 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18  # Or python: 3.x if using Python
+    commands:
+      - echo Installing dependencies...
+      - npm install  # Remove if not using Node.js
+
+  pre_build:
+    commands:
+      - echo Zipping the Lambda function...
+      - zip -r function.zip .  # zip everything in the repo
+      - export S3_BUCKET=my-lambda-deployments
+      - export ZIP_KEY=lambda-function-$(date +%Y%m%d%H%M%S).zip
+
+  build:
+    commands:
+      - echo Uploading the zip to S3...
+      - aws s3 cp function.zip s3://$S3_BUCKET/$ZIP_KEY
+
+  post_build:
+    commands:
+      - echo Updating Lambda function...
+      - aws lambda update-function-code --function-name my-lambda-function --s3-bucket $S3_BUCKET --s3-key $ZIP_KEY
+
+artifacts:
+  files:
+    - function.zip
