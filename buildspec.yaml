@@ -1,10 +1,5 @@
 version: 0.2
 
-env:
-  variables:
-    S3_BUCKET: my-lambda-deployments
-  # If you want to define ZIP_KEY dynamically, you can define it inside commands
-
 phases:
   install:
     runtime-versions:
@@ -18,18 +13,15 @@ phases:
       - echo Preparing zip file...
       - rm -f function.zip
       - zip -r function.zip .
-      - export ZIP_KEY=lambda-function-$(date +%Y%m%d%H%M%S).zip
-      - echo ZIP_KEY=$ZIP_KEY
 
   build:
     commands:
-      - echo Uploading function.zip to S3 bucket $S3_BUCKET with key $ZIP_KEY
-      - aws s3 cp function.zip s3://$S3_BUCKET/$ZIP_KEY
+      - echo Skipping S3 upload. Uploading directly to Lambda...
 
   post_build:
     commands:
-      - echo Updating Lambda function code
-      - aws lambda update-function-code --function-name my-lambda-function --s3-bucket $S3_BUCKET --s3-key $ZIP_KEY
+      - echo Updating Lambda function code directly
+      - aws lambda update-function-code --function-name my-lambda-function --zip-file fileb://function.zip
 
 artifacts:
   files:
