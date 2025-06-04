@@ -1,28 +1,21 @@
 version: 0.2
 
 phases:
-  install:
-    runtime-versions:
-      nodejs: 18
-    commands:
-      - echo Installing dependencies...
-      - npm install
-
   pre_build:
     commands:
-      - echo Preparing zip file...
-      - rm -f function.zip
-      - zip -r function.zip .
+      - echo Starting pre-build phase...
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - echo IMAGE_TAG=$IMAGE_TAG
 
   build:
     commands:
-      - echo Skipping S3 upload. Uploading directly to Lambda...
+      - echo Building Docker image...
+      - docker build -t nginx-static:$IMAGE_TAG .
 
   post_build:
     commands:
-      - echo Updating Lambda function code directly
-      - aws lambda update-function-code --function-name my-lambda-function --zip-file fileb://function.zip
+      - echo Docker image built successfully: nginx-static:$IMAGE_TAG
 
 artifacts:
   files:
-    - function.zip
+    - '**/*'
